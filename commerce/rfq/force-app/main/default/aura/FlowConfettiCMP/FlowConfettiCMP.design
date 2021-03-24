@@ -1,0 +1,7 @@
+<design:component>
+    
+    <design:attribute name = "confettiEffect" label="Select the conffeti effect" 
+                      datasource="Cannon,Fireworks,Shower,Winner"
+                      description="Available values are: Cannon,Fireworks,Shower,Winner,BurstMode"/>
+	
+</design:component>

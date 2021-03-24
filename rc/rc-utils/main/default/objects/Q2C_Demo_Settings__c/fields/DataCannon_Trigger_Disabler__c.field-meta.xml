@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DataCannon_Trigger_Disabler__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used to disable triggers, workflow rules and process builders that cause errors in the DataCannon</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Used to disable triggers, workflow rules and process builders that cause errors in the DataCannon</inlineHelpText>
+    <label>DataCannon Trigger Disabler</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

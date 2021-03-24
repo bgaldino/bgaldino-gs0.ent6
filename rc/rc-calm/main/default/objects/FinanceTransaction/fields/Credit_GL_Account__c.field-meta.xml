@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Credit_GL_Account__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Credit GL Account</label>
+    <referenceTo>blng__GLAccount__c</referenceTo>
+    <relationshipLabel>Finance Transactions (Credit GL Account)</relationshipLabel>
+    <relationshipName>Finance_Transactions1</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

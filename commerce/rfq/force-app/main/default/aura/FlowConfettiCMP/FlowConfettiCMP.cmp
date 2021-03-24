@@ -1,0 +1,8 @@
+<aura:component implements="lightning:availableForFlowScreens" access="global">
+    
+    <ltng:require scripts="{!$Resource.Confetti}" afterScriptsLoaded="{!c.fireConfetti}"/>
+    
+    <aura:attribute name="colors" type="String[]" default="['#610B0B','#FFFF00','#FF00BF','#0040FF','#585858','#00FFBF','#FE642E','#FFBF00','#0101DF','#FF8000','#00FF00','#FF0040','#A901DB','#0B0B3B','#FF0000']"/>
+    <aura:attribute name="confettiEffect" type="string" default="Cannon"/>
+
+</aura:component>

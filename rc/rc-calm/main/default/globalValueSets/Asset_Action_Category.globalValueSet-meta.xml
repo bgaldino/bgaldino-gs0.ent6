@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Initial Sale</fullName>
+        <default>false</default>
+        <label>Initial Sale</label>
+    </customValue>
+    <customValue>
+        <fullName>Upsells</fullName>
+        <default>false</default>
+        <label>Upsells</label>
+    </customValue>
+    <customValue>
+        <fullName>Downsells</fullName>
+        <default>false</default>
+        <label>Downsells</label>
+    </customValue>
+    <customValue>
+        <fullName>Cross-Sells</fullName>
+        <default>false</default>
+        <label>Cross-Sells</label>
+    </customValue>
+    <customValue>
+        <fullName>Cancellations</fullName>
+        <default>false</default>
+        <label>Cancellations</label>
+    </customValue>
+    <customValue>
+        <fullName>Transfers</fullName>
+        <default>false</default>
+        <label>Transfers</label>
+    </customValue>
+    <customValue>
+        <fullName>Terms &amp; Conditions Changes</fullName>
+        <default>false</default>
+        <label>Terms &amp; Conditions Changes</label>
+    </customValue>
+    <customValue>
+        <fullName>Renewals</fullName>
+        <default>false</default>
+        <label>Renewals</label>
+    </customValue>
+    <customValue>
+        <fullName>Other</fullName>
+        <default>false</default>
+        <label>Other</label>
+    </customValue>
+    <masterLabel>Asset Action Category</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

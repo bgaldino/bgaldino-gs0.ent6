@@ -1,0 +1,43 @@
+{
+  "packageDirectories": [
+    {
+      "path": "rc/rc-base",
+      "default": true
+    },
+    {
+      "path": "rc/rc-api-cpq",
+      "package": "rc-api-cpq",
+      "default": false,
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1",
+      "dependencies": [
+        {
+        "package": "Salesforce CPQ@230.5.0.1"
+        }
+      ]
+    },
+    {
+      "path": "rc/rc-calm",
+      "default": false
+    },
+    {
+      "path": "rc/rc-utils",
+      "default": false
+    },
+    {
+      "path": "commerce/b2b-commerce-on-lightning-quickstart/sfdx/force-app",
+      "default": false
+    },
+    {
+      "path": "commerce/rfq",
+      "default": false
+    }
+
+  ],
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "51.0",
+  "packageAliases": {
+    "Salesforce CPQ@230.5.0.1": "04t4N000000szMmQAI"
+  }
+}

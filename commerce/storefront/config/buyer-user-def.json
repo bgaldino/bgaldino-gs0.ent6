@@ -1,0 +1,12 @@
+{
+    "Username": "b2bbuyer@smartbytes.demo.230multi",
+    "FirstName": "Benny",
+    "LastName": "Buyer",
+    "Email": "bgaldino@salesforce.com",
+    "Alias": "buyer",
+    "TimeZoneSidKey": "America/Los_Angeles",
+    "LocaleSidKey": "en_US",
+    "EmailEncodingKey": "UTF-8",
+    "LanguageLocaleKey": "en_US",
+    "profileName": "Buyer_User_Profile_From_QuickStart"
+}

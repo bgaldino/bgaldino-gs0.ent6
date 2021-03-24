@@ -1,0 +1,13 @@
+{
+    "Username": "b2ba@smartbytes.demo.230multi",
+    "FirstName": "B2B",
+    "LastName": "Admin",
+    "Email": "bgaldino@salesforce.com",
+    "Alias": "admin13",
+    "TimeZoneSidKey": "America/Los_Angeles",
+    "LocaleSidKey": "en_US",
+    "EmailEncodingKey": "UTF-8",
+    "LanguageLocaleKey": "en_US",
+    "profileName": "System Administrator",
+    "generatePassword": true
+}

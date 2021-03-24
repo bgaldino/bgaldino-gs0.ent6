@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Finance_System_Integration_Status__c</fullName>
+    <externalId>false</externalId>
+    <label>Finance System Integration Status</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Not Selected, Pending, In Process, Retry In Process, Success, Error, Failed</fullName>
+                <default>false</default>
+                <label>Not Selected, Pending, In Process, Retry In Process, Success, Error, Failed</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
