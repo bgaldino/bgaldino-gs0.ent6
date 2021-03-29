@@ -139,7 +139,7 @@ else
 	checkoutMetaFile="experience-bundle-package/unpackaged/experiences/$communityExperienceBundleName/views/checkout.json"
 	tmpfile=$(mktemp)
 	# This determines the name of the main flow as it will always be the only flow to terminate in "Checkout.flow"
-	mainFlowName=`ls ../examples/checkout/framework/flows/*Checkout.flow | sed 's/.*flows\/\(.*\).flow/\1/'`
+	mainFlowName=`ls ../b2b-commerce-on-lightning-quickstart/examples/checkout/framework/flows/*Checkout.flow | sed 's/.*flows\/\(.*\).flow/\1/'`
 	sed "s/sfdc_checkout__CheckoutTemplate/$mainFlowName/g" $checkoutMetaFile > $tmpfile
 	mv -f $tmpfile $checkoutMetaFile
 
@@ -148,13 +148,101 @@ else
 	echo "3. Updating members list and activating community."
 	networkMetaFile="experience-bundle-package/unpackaged/networks/$communityNetworkName".network
 	tmpfile=$(mktemp)
-	sed "s/<networkMemberGroups>/<networkMemberGroups><profile>buyer_user_profile_from_quickstart<\/profile>/g;s/<status>.*/<status>Live<\/status>/g" $networkMetaFile > $tmpfile
+	sed "s/<networkMemberGroups>/<networkMemberGroups><profile>Revenue_Cloud_Buyer_User_Profile<\/profile>/g;s/<status>.*/<status>Live<\/status>/g" $networkMetaFile > $tmpfile
 	mv -f $tmpfile $networkMetaFile
 
-    	# Import Products and related data
+    # Import Products and related data
 	# Get new Buyer Group Name
 	echo "4. Importing products."
 	buyergroupName=$(bash ./import_products.sh $1 | tail -n 1)
 
-    
+	# Assign a role to the admin user, else update user will error out
+	echo "5. Mapping Admin User to Role."
+    ceoID=`sfdx force:data:soql:query --query \ "SELECT Id FROM UserRole WHERE Name = 'CEO'" -r csv |tail -n +2`
+	sfdx force:data:record:create -s UserRole -v "ParentRoleId='$ceoID' Name='AdminRoleFromQuickstart' DeveloperName='AdminRoleFromQuickstart' RollupDescription='AdminRoleFromQuickstart' "
+	newRoleID=`sfdx force:data:soql:query --query \ "SELECT Id FROM UserRole WHERE Name = 'AdminRoleFromQuickstart'" -r csv |tail -n +2`
+	username=`sfdx force:user:display | grep "Username" | sed 's/Username//g;s/^[[:space:]]*//g'`
+
+	sfdx force:data:record:update -s User -v "UserRoleId='$newRoleID'" -w "Username='$username'"
+
+	# Create Buyer User. Go to config/buyer-user-def.json to change name, email and alias.
+	echo "6. Creating Buyer User with associated Contact and Account."
+	sfdx force:user:create -f config/buyer-user-def.json
+	buyerusername=`grep -i '"Username":' config/buyer-user-def.json|cut -d "\"" -f 4`
+
+	# Get most recently created account with JITUserAccount suffix
+	# Convert Account to Buyer Account
+	echo "Making Account a Buyer Account."
+	accountID=`sfdx force:data:soql:query --query \ "SELECT Id FROM Account WHERE Name LIKE '${buyerusername}JITUserAccount' ORDER BY CreatedDate Desc LIMIT 1" -r csv |tail -n +2`
+	sfdx force:data:record:create -s BuyerAccount -v "BuyerId='$accountID' Name='BuyerAccountFromQuickstart' isActive=true"
+
+	# Assign Account to Buyer Group
+	echo "Assigning Buyer Account to Buyer Group."
+	buyergroupID=`sfdx force:data:soql:query --query \ "SELECT Id FROM BuyerGroup WHERE Name = '${buyergroupName}'" -r csv |tail -n +2`
+	sfdx force:data:record:create -s BuyerGroupMember -v "BuyerGroupId='$buyergroupID' BuyerId='$accountID'"
+	# Add Contact Point Addresses to the buyer account associated with the buyer user.
+	# The account will have 2 Shipping and 2 billing addresses associated to it.
+	# To view the addresses in the UI you need to add Contact Point Addresses to the related lists for Account
+	echo "7. Add Contact Point Addresses to the Buyer Account."
+	existingCPAForBuyerAccount=`sfdx force:data:soql:query --query \ "SELECT Id FROM ContactPointAddress WHERE ParentId='${accountID}' LIMIT 1" -r csv |tail -n +2`
+	if [ -z "$existingCPAForBuyerAccount" ]
+	then
+		sfdx force:data:record:create -s ContactPointAddress -v "AddressType='Shipping' ParentId='$accountID' ActiveFromDate='2020-01-01' ActiveToDate='2040-01-01' City='Vancouver' Country='Canada' IsDefault='true' Name='Default Shipping' PostalCode='V6B 5A7' State='BC' Street='333 Seymour Street (Shipping)'"
+		sfdx force:data:record:create -s ContactPointAddress -v "AddressType='Billing' ParentId='$accountID' ActiveFromDate='2020-01-01' ActiveToDate='2040-01-01' City='Vancouver' Country='Canada' IsDefault='true' Name='Default Billing' PostalCode='V6B 5A7' State='BC' Street='333 Seymour Street (Billing)'"
+		sfdx force:data:record:create -s ContactPointAddress -v "AddressType='Shipping' ParentId='$accountID' ActiveFromDate='2020-01-01' ActiveToDate='2040-01-01' City='Vancouver' Country='United States' IsDefault='false' Name='Non-Default Shipping' PostalCode='94105' State='CA' Street='415 Mission Street (Shipping)'"
+		sfdx force:data:record:create -s ContactPointAddress -v "AddressType='Billing' ParentId='$accountID' ActiveFromDate='2020-01-01' ActiveToDate='2040-01-01' City='Vancouver' Country='United States' IsDefault='false' Name='Non-Default Billing' PostalCode='94105' State='CA' Street='415 Mission Street (Billing)'"
+	else
+		echo "There is already at least 1 Contact Point Address for your Buyer Account ${buyerusername}JITUserAccount"
+	fi
+
+
+    echo "Setting up Commerce Diagnostic Event Process Builder"
+    storeId=`sfdx force:data:soql:query -q "SELECT Id FROM WebStore WHERE Name='$communityNetworkName' LIMIT 1" -r csv | tail -n +2`
+    processMetaFile="experience-bundle-package/unpackaged/flows/Process_CommerceDiagnosticEvents.flow"
+    tmpfile=$(mktemp)
+    sed "s/<stringValue>0ZER000000004ZaOAI<\/stringValue>/<stringValue>$storeId<\/stringValue>/g;s/<status>Draft<\/status>/<status>Active<\/status>/g" $processMetaFile > $tmpfile
+	mv -f $tmpfile $processMetaFile
+
+	echo "Setup Guest Browsing."
+	echo "Checking if B2B or B2C"
+	storeType=`sfdx force:data:soql:query --query \ "SELECT Type FROM WebStore WHERE Name = '${communityNetworkName}'" -r csv |tail -n +2`
+	echo "Store Type is $storeType"
+	# Update Guest Profile with required CRUD and FLS
+	if [ "$storeType" = "B2C" ]
+	then
+		sh ./enable_guest_browsing.sh $communityNetworkName $buyergroupName true
+	fi
+
+	#############################
+	#   Deploy Updated Store    #
+	#############################
+
+	echo "Creating the package to deploy, including the new flow."
+	cd experience-bundle-package/unpackaged/
+	cp -f ../../quickstart-config/package-deploy-template.xml package.xml
+	zip -r -X ../"$communityExperienceBundleName"ToDeploy.zip *
+	cd ../..
+
+	# Uncomment the line below if you'd like to pause the script in order to save the zip file to deploy
+	read -p "Press any key to resume ..."
+
+	echo "Deploy the new zip including the flow, ignoring warnings, then clean-up."
+	sfdx force:mdapi:deploy -g -f experience-bundle-package/"$communityExperienceBundleName"ToDeploy.zip --wait -1 --verbose --singlepackage
+	rm -fr experience-bundle-package
+
+	echo "Removing the package xml files used for retrieving and deploying metadata at this step."
+	rm package-retrieve.xml
+
+	echo "Publishing the community."
+	sfdx force:community:publish -n "$communityNetworkName"
+	sleep 10s
+
+	echo "Creating search index."
+	sfdx 1commerce:search:start -n "$communityNetworkName"
+
+	echo "QUICK START COMPLETE!"
+
+	sfdx force:user:password:generate -o ${buyerusername}
+	echo "Use this buyer user to log in to the store:"
+	sfdx force:user:display -u ${buyerusername}
 fi

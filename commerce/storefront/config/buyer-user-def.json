@@ -1,5 +1,5 @@
 {
-    "Username": "b2bbuyer@smartbytes.demo.230multi",
+    "Username": "b2bbuyer@example.com",
     "FirstName": "Benny",
     "LastName": "Buyer",
     "Email": "bgaldino@salesforce.com",
@@ -8,5 +8,5 @@
     "LocaleSidKey": "en_US",
     "EmailEncodingKey": "UTF-8",
     "LanguageLocaleKey": "en_US",
-    "profileName": "Buyer_User_Profile_From_QuickStart"
+    "profileName": "Revenue_Cloud_Buyer_User_Profile"
 }
