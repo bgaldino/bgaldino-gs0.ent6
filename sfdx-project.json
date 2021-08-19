@@ -12,7 +12,7 @@
       "versionNumber": "0.1",
       "dependencies": [
         {
-        "package": "Salesforce CPQ@230.5.0.1"
+        "package": "Salesforce CPQ@230.6.0.1"
         }
       ]
     },
@@ -25,19 +25,23 @@
       "default": false
     },
     {
-      "path": "commerce/storefront",
+      "path": "commerce/storefront/force-app",
       "default": false
     },
     {
       "path": "commerce/rfq",
+      "default": false
+    },
+    {
+      "path": "rc/rc-pilot",
       "default": false
     }
 
   ],
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "51.0",
+  "sourceApiVersion": "53.0",
   "packageAliases": {
-    "Salesforce CPQ@230.5.0.1": "04t4N000000szMmQAI"
+    "Salesforce CPQ@230.6.0.1": "04t4N000000szN1QAI"
   }
 }

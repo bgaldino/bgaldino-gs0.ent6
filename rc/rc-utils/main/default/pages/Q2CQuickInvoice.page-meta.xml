@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata"> 
+    <apiVersion>52.0</apiVersion>
+    <label>Q2CQuickInvoice</label>
+    <packageVersions>
+        <majorNumber>232</majorNumber>
+        <minorNumber>0</minorNumber>
+        <namespace>SBQQ</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>232</majorNumber>
+        <minorNumber>0</minorNumber>
+        <namespace>blng</namespace>
+    </packageVersions>
+</ApexPage>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <types>
+    <name>Flow</name>
+    <members>Cart_to_Quote_Bell</members>
+    <members>Winter_2021_Checkout_Flow_And_Cart_To_Quote</members>
+    <members>Winter_2021_Subflow_Quote_Checkout_Summary</members>
+    <members>Winter_2021_Subflow_Quote_Confirmation</members>
+    <members>Winter_2021_Subflow_Quote_and_Shipping_Address</members>
+  </types>
+  <types>
+    <name>CustomNotificationType</name>
+    <members>Cart_to_Quote_Notification_Type</members>
+  </types>
+  <version>50.0</version>
+</Package>
