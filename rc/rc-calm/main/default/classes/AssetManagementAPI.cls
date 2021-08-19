@@ -8,6 +8,8 @@ public class AssetManagementAPI {
    public List<AssetActionSource> assetActionSources;
    public AssetResponse assetResponse;
 
+   public static final String API_VERSION = '53.0';
+
    public static Id assetId { get; set; }
 
    public enum apiAction {
@@ -30,7 +32,7 @@ public class AssetManagementAPI {
       System.debug('***** reType = ' + reType);
       System.debug('***** reType = ' + action);
       //String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-      //String restAPIURL = sfdcURL + '/services/data/v50.0/asset-management/actions/generate';
+      //String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/actions/generate';
 
       SObject record = getRecord(reId);
       Id assetId;
@@ -112,26 +114,26 @@ public class AssetManagementAPI {
 
    static String buildRestAPIURL() {
       String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v51.0/asset-management/assets/actions/generate';
+      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/actions/generate';
       return restAPIURL;
    }
 
    static String buildGenerateRestAPIURL() {
       String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v51.0/asset-management/assets/actions/generate';
+      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/actions/generate';
       return restAPIURL;
    }
 
    static String buildChangeRestAPIURL(Id assetId) {
       String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v51.0/asset-management/assets/' + assetId + '/actions/change';
+      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/' + assetId + '/actions/change';
       System.debug('URL posted to was ' + restAPIURL);
       return restAPIURL;
    }
 
    static String buildCancelRestAPIURL(Id assetId) {
       String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v51.0/asset-management/assets/' + assetId + '/actions/cancel';
+      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/' + assetId + '/actions/cancel';
       return restAPIURL;
    }
 

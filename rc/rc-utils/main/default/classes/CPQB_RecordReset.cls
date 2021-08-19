@@ -371,13 +371,22 @@ public with sharing class CPQB_RecordReset {
     }
 
     public static void deleteFinanceLogs(Id accountId) {
-        FinanceTransaction[] ftxToDelete = [SELECT Id FROM FinanceTransaction WHERE accountId =:accountId];
-        try {
-            Database.delete(ftxToDelete);
-        } catch (DmlException e) {
-            System.debug(e);
-            throw new AuraHandledException(e.getMessage());
-        }
+
+        Schema.DescribeSObjectResult dsr = FinanceTransaction.sObjectType.getDescribe();
+        
+        if(!dsr.isDeletable()) {
+            return;
+        } else {
+            FinanceTransaction[] ftxToDelete = [SELECT Id FROM FinanceTransaction WHERE accountId =:accountId];
+            try {
+                if(dsr.isDeletable()) {
+                    //Database.delete(ftxToDelete);
+                }
+            } catch (DmlException e) {
+                System.debug(e);
+                throw new AuraHandledException(e.getMessage());
+            }
+        }   
     }
 
     public static void deleteFinanceTransactions(Id accountId) {

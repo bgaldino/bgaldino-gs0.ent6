@@ -1,0 +1,24 @@
+{
+  "orgName": "G0.E9.S1",
+  "sourceOrg": "00DB0000000UPGX",
+  "features": ["Communities", "B2BCommerce", "OrderManagement", "EnableSetPasswordInApi", "CPQ", "InsightsPlatform", "WavePlatform", "EnablePRM", "DevelopmentWave", "MultiCurrency", "EinsteinAnalyticsPlus", "PlatformConnect:1", "ServiceCloud", "SalesCloudEinstein", "AnalyticsAdminPerms", "CMSUnlimitedUse"],
+    "settings": {
+    "lightningExperienceSettings": {
+        "enableS1DesktopEnabled": true
+    },
+    "experienceBundleSettings": {
+      "enableExperienceBundleMetadata": true
+    },
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    },
+    "orderManagementSettings": {
+      "enableOrderManagement": true
+    },
+    "orderSettings": {
+      "enableOrders": true,
+      "enableEnhancedCommerceOrders": true,
+      "enableOptionalPricebook": true
+    }
+  }
+}

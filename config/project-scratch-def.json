@@ -1,9 +1,9 @@
 {
-  "orgName": "GS0.ENT6",
-  "sourceOrg": "00DB0000000cb1QMAQ",
-  "features": ["Communities", "B2BCommerce", "OrderManagement", "EnableSetPasswordInApi", "CPQ", "InsightsPlatform", "WavePlatform", "EnablePRM", "DevelopmentWave", "MultiCurrency", "EinsteinAnalyticsPlus", "PlatformConnect:1", "ServiceCloud", "SalesCloudEinstein", "AnalyticsAdminPerms", "CMSUnlimitedUse"],
-    "settings": {
-    "lightningExperienceSettings": {
+  "orgName": "Test B2B Company",
+  "edition": "Developer",
+  "features": ["Communities", "B2BCommerce", "OrderManagement", "EnableSetPasswordInApi"],
+  "settings": { 
+  "lightningExperienceSettings": {
         "enableS1DesktopEnabled": true
     },
     "experienceBundleSettings": {
@@ -19,6 +19,9 @@
       "enableOrders": true,
       "enableEnhancedCommerceOrders": true,
       "enableOptionalPricebook": true
+    },
+    "commerceSettings": {
+      "commerceEnabled": true
     }
   }
 }

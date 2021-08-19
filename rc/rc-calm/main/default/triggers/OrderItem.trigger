@@ -7,7 +7,7 @@ trigger OrderItem on OrderItem (before delete, before insert, before update, aft
 
         when AFTER_INSERT {
             System.debug('*** DEBUG: OrderItem ' + Trigger.operationType);
-            boolean debug = false;
+            boolean debug = true;
             List<OrderItem> orderItemsToUpdate = new List<OrderItem>();
             List<OrderItem> itemsWithCurrentDetails = [select 
                                                              id, 

@@ -16,7 +16,8 @@ public with sharing class FinanceTransactionAPI {
 
 	public static Id ftId { get; set; }
 
-	public static final String DEFAULT_LEGAL_ENTITY = 'a205Y000005eTzTQAU';
+	public static final String DEFAULT_LEGAL_ENTITY = 'a1sB0000001F3r0IAC';
+	public static final String API_VERSION = '53.0';
 
 	@future(callout = true)
 	public static void doPost(Id reId, String reType, String action, String actionType) {
@@ -26,7 +27,7 @@ public with sharing class FinanceTransactionAPI {
 		System.debug('***** actionType = ' + actionType);
 
 		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v51.0/sobjects/FinanceTransaction/';
+		String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/sobjects/FinanceTransaction/';
 		Http http = new Http();
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setMethod('POST');
@@ -84,7 +85,7 @@ public with sharing class FinanceTransactionAPI {
 		String account = '\'';
 		String query = 'SELECT+Id+from+FinanceTransaction+WHERE+AccountId=\'' + accountId + '\'';
 		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v51.0/query/?q=' + query;
+		String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/query/?q=' + query;
 		Http http = new Http();
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setMethod('GET');
@@ -111,7 +112,7 @@ public with sharing class FinanceTransactionAPI {
 	public static void doDelete(List<Id> ids) {
 		for (Id id : ids) {
 			String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-            String restAPIURL = sfdcURL + '/services/data/v51.0/sobjects/FinanceTransaction/'+id;
+            String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/sobjects/FinanceTransaction/'+id;
 			Http http = new Http();
 			HttpRequest httpRequest = new HttpRequest();
 			httpRequest.setMethod('DELETE');
@@ -126,7 +127,7 @@ public with sharing class FinanceTransactionAPI {
     public static void doDeleteComposite(List<Id> ids) {
         String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
         if (ids.size() < 200 ) {        
-            String restAPIURL = sfdcURL + '/services/data/v51.0/composite/sobjects?ids=' + getJoin(ids);
+            String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/composite/sobjects?ids=' + getJoin(ids);
             Http http = new Http();
 			HttpRequest httpRequest = new HttpRequest();
 			httpRequest.setMethod('DELETE');

@@ -1,9 +1,8 @@
 {
-    "Username": "b2ba@example.com",
     "FirstName": "B2B",
     "LastName": "Admin",
     "Email": "bgaldino@salesforce.com",
-    "Alias": "admin13",
+    "Alias": "b2badmin",
     "TimeZoneSidKey": "America/Los_Angeles",
     "LocaleSidKey": "en_US",
     "EmailEncodingKey": "UTF-8",

@@ -50,7 +50,7 @@ public with sharing class RecognizeRevenueService {
 
     static String buildRestAPIURL() {
 		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v51.0/actions/custom/apex/blng__RevenueRecognition';
+		String restAPIURL = sfdcURL + '/services/data/v53.0/actions/custom/apex/blng__RevenueRecognition';
 		return restAPIURL;
     }
     
@@ -98,7 +98,7 @@ public with sharing class RecognizeRevenueService {
     }
 
     public class RevenueScheduleInputs {
-        String currencyIsoCode;
+        //String currencyIsoCode;
         Id legalEntityID;
         Decimal revenueAmount;
         Id revenueRecognitionRuleId;
@@ -107,7 +107,7 @@ public with sharing class RecognizeRevenueService {
         Date startDate;
         Date endDate;
         RevenueScheduleInputs(OrderItem oi) {
-            currencyIsoCode = oi.CurrencyIsoCode;
+            //currencyIsoCode = oi.CurrencyIsoCode;
             legalEntityID = oi.blng__LegalEntity__c;
             revenueAmount = oi.TotalPrice;
             revenueRecognitionRuleId = oi.blng__RevenueRecognitionRule__c;
@@ -119,7 +119,7 @@ public with sharing class RecognizeRevenueService {
             //endDate = oi.EndDate.year()+'-'+oi.EndDate.month()+'-'+oi.EndDate.day();
         }
         RevenueScheduleInputs(SBQQ__QuoteLine__c ql) {
-            currencyIsoCode = ql.CurrencyIsoCode;
+            //currencyIsoCode = ql.CurrencyIsoCode;
             legalEntityID = ql.LegalEntity__c;
             revenueAmount = ql.RevenueAmount__c;
             revenueRecognitionRuleId = ql.Revenue_Recognition_Rule__c;

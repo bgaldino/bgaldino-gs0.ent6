@@ -28,7 +28,7 @@ public class RestQueryResponse {
 	public class Attributes {
 		public String type_Z { get; set; }
 
-		 // in json: type
+		// in json: type
 		public String url { get; set; }
 
 		public Attributes(JSONParser parser) {
