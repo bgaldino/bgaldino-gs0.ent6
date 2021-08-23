@@ -1,4 +1,7 @@
 public with sharing class RecognizeRevenueService {
+
+    public static final String API_VERSION = '53.0';
+
     public RecognizeRevenueService() {
         OrderItem oi;
     }
@@ -34,23 +37,12 @@ public with sharing class RecognizeRevenueService {
 			System.debug('The status code returned was not expected: ' + response.getStatusCode()+' ' + response.getStatus());
 		} else {
 			System.debug(response.getBody());
-/* 			Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
-			Map<String, Object> assets = (Map<String, Object>)m.get('asset');
-			if (assets != null) {
-				for (String id : assets.keySet()) {
-					//AssetResponse ar = (AssetResponse) asset;
-					System.debug('*****RESPONSE CALM Asset = ' + assets.get(id));
-					assetId = (Id)assets.get(id);
-					//return (AssetResponse) System.JSON.deserialize(response.getBody(), AssetResponse.class)
-				}
-			} */
-
 		}
     }
 
     static String buildRestAPIURL() {
 		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v53.0/actions/custom/apex/blng__RevenueRecognition';
+		String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/actions/custom/apex/blng__RevenueRecognition';
 		return restAPIURL;
     }
     

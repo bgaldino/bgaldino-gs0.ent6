@@ -17,6 +17,10 @@
       ]
     },
     {
+      "path": "rc/rc-revenue",
+      "default": false
+    },
+    {
       "path": "rc/rc-calm",
       "default": false
     },
