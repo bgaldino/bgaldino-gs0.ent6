@@ -1,7 +1,6 @@
 public without sharing class CPQB_AccountUtilsController {
     @AuraEnabled
     public static void resetAccount(Id accId, Boolean deleteCP){
-        CPQB_RecordReset.setAccountResetStatus(accId, true);
         CPQB_RecordReset.disableBillingTriggers(true);
 
         CPQB_RecordReset.deletePaymentTransactions(accId);
@@ -25,16 +24,14 @@ public without sharing class CPQB_AccountUtilsController {
         }
 
         CPQB_RecordReset.disableBillingTriggers(false);
-        CPQB_RecordReset.setAccountResetStatus(accId, false);
+        
+        
+        CPQB_RecordReset.delRevenueTransactions(accId);
+        CPQB_RecordReset.delTransactionJournalEntryLines(accId);
+        CPQB_RecordReset.delTransactionJournalEntries(accId);
 
-        //CPQB_RecordReset.deleteFinanceTransactions(accId);
         System.debug('Total Number of SOQL Queries in this apex code context: ' + Limits.getQueries());
 
-    }
-
-    @AuraEnabled
-    public static void deleteFinanceTransactions(Id accId, Boolean deleteCP){
-        CPQB_RecordReset.deleteFinanceTransactions(accId);
     }
 
     @AuraEnabled
@@ -73,7 +70,7 @@ public without sharing class CPQB_AccountUtilsController {
         
         try {
                 Database.update(quotesToClean);
-                Database.update(opportinitiesToClean);
+            	Database.update(opportinitiesToClean);
             } catch (DmlException e) {
                 System.debug(e);
                 throw new AuraHandledException(e.getMessage());

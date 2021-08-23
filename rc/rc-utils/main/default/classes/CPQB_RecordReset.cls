@@ -10,6 +10,48 @@ public with sharing class CPQB_RecordReset {
   //     }
   // }
 
+  public static void delRevenueTransactions(Id accId) {
+    blng__RevenueTransaction__c[] RvTrnsToDelete = [
+      SELECT Id, blng__Account__c
+      FROM blng__RevenueTransaction__c
+      WHERE blng__Account__c = :accId
+    ];
+    try {
+      Database.delete(RvTrnsToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  public static void delTransactionJournalEntryLines(Id accId) {
+    Transaction_Journal_Entry_Line__c[] tjelToDelete = [
+      SELECT Id, Account__c
+      FROM Transaction_Journal_Entry_Line__c
+      WHERE Account__c = :accId
+    ];
+    try {
+      Database.delete(tjelToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  public static void delTransactionJournalEntries(Id accId) {
+    Transaction_Journal_Entry__c[] tjelToDelete = [
+      SELECT Id, Account__c
+      FROM Transaction_Journal_Entry__c
+      WHERE Account__c = :accId
+    ];
+    try {
+      Database.delete(tjelToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
   public static Boolean disableBillingTriggers(Boolean triggersDisabled) {
     blng__BillingConfig__c triggerConfig = [
       SELECT Id, Name, blng__BooleanValue__c
@@ -22,25 +64,6 @@ public with sharing class CPQB_RecordReset {
     if (sr.isSuccess()) {
       String msg = triggersDisabled ? 'disabled' : 'enabled';
       System.debug('Successfully ' + msg + ' Billing Triggers');
-      return true;
-    } else {
-      for (Database.Error err : sr.getErrors()) {
-        System.debug('The following error has occurred.');
-        System.debug(err.getStatusCode() + ': ' + err.getMessage());
-        throw new AuraHandledException(err.getMessage());
-      }
-      return false;
-    }
-  }
-
-  public static Boolean setAccountResetStatus(Id accId, Boolean reset) {
-    Account accToReset = [SELECT Id, Reset__c FROM Account WHERE Id = :accId];
-    accToReset.Reset__c = reset;
-    SObject so = (SObject) accToReset;
-    Database.SaveResult sr = Database.updateImmediate(so);
-    if (sr.isSuccess()) {
-      String msg = reset ? 'disabled' : 'enabled';
-      System.debug('Successfully ' + msg + ' Account Reset Flag');
       return true;
     } else {
       for (Database.Error err : sr.getErrors()) {
@@ -80,6 +103,231 @@ public with sharing class CPQB_RecordReset {
     }
   }
 
+  public static void deleteRecordJobs(Set<Id> records) {
+    SBQQ__RecordJob__c[] valuesToDelete = [
+      SELECT Id
+      FROM SBQQ__RecordJob__c
+      WHERE RecordIdShort__c IN :records
+    ];
+    try {
+      Database.delete(valuesToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  public static void deleteQuoteDocuments(Set<Id> records) {
+    // native CPQ Document Generation
+
+    SBQQ__QuoteDocument__c[] quoteDocuments = [
+      SELECT Id, SBQQ__DocumentId__c
+      FROM SBQQ__QuoteDocument__c
+      WHERE SBQQ__Quote__c IN :records
+    ];
+
+    Set<Id> documentIds = new Set<Id>();
+    for (SBQQ__QuoteDocument__c qD : quoteDocuments) {
+      documentIds.add(qD.SBQQ__DocumentId__c);
+    }
+
+    Document[] valuesToDelete = [
+      SELECT Id
+      FROM Document
+      WHERE Id IN :documentIds
+    ];
+
+    try {
+      Database.delete(valuesToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+/* 
+  public static void deleteCongaQuoteDocuments(Set<Id> records) {
+    SBQQ__Quote__c[] quotes = [
+      SELECT Id
+      FROM SBQQ__Quote__c
+      WHERE Id IN :records
+    ];
+
+    Set<String> documentIds = new Set<String>(); // must be a collection, not set - to use LIKE
+    for (SBQQ__Quote__c q : quotes) {
+      documentIds.add('%' + q.Id + '%');
+    }
+
+    List<String> arr = new List<String>();
+    arr.addAll(documentIds);
+
+    ContentDocument[] valuesToDelete = [
+      SELECT Id
+      FROM ContentDocument
+      WHERE Title LIKE :arr
+    ];
+    try {
+      Database.delete(valuesToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  public static void deleteCongaInvoiceDocuments(Set<Id> records) {
+    blng__Invoice__c[] invoices = [
+      SELECT Id, Account_Name__c
+      FROM blng__Invoice__c
+      WHERE Id IN :records
+    ];
+
+    Set<String> documentIds = new Set<String>(); // must be a collection, not set - to use LIKE
+    for (blng__Invoice__c i : invoices) {
+      documentIds.add('%' + i.Account_Name__c + '%');
+    }
+
+    List<String> arr = new List<String>();
+    arr.addAll(documentIds);
+
+    ContentDocument[] valuesToDelete = [
+      SELECT Id
+      FROM ContentDocument
+      WHERE Title LIKE :arr
+    ];
+    try {
+      Database.delete(valuesToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  public static void deleteDocuSignQuoteDocuments(Set<Id> records) {
+    //first delete .docx in Files that look like Quote Number: SmartBytes Quote_Q-29577
+    SBQQ__Quote__c[] quotes = [
+      SELECT Id, Name
+      FROM SBQQ__Quote__c
+      WHERE Id IN :records
+    ];
+
+    Set<String> documentIds = new Set<String>(); // must be a collection, not set - to use LIKE
+    for (SBQQ__Quote__c q : quotes) {
+      documentIds.add('%' + q.Name + '%');
+    }
+
+    List<String> arr = new List<String>();
+    arr.addAll(documentIds);
+
+    ContentDocument[] valuesToDelete = [
+      SELECT Id
+      FROM ContentDocument
+      WHERE Title LIKE :arr
+    ];
+    try {
+      Database.delete(valuesToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+
+    //Next delete .pdf in Files that look like "Documents for your DocuSign Signature.pdf" - sent for signature
+    Set<String> documentIds2 = new Set<String>(); // must be a collection, not set - to use LIKE
+    documentIds2.add('%' + 'Docusign Signature' + '%');
+
+    List<String> arr2 = new List<String>();
+    arr2.addAll(documentIds2);
+
+    ContentDocument[] valuesToDelete2 = [
+      SELECT Id
+      FROM ContentDocument
+      WHERE Title LIKE :arr2
+    ];
+    try {
+      Database.delete(valuesToDelete2);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+
+    //Next delete DocuSign Envelope Object Records
+    Set<String> quoteIds = new Set<String>();
+    for (SBQQ__Quote__c q : quotes) {
+      quoteIds.add(q.Id);
+    }
+
+    dfsle__Envelope__c[] valuesToDelete3 = [
+      SELECT Id
+      FROM dfsle__Envelope__c
+      WHERE dfsle__SourceId__c IN :quoteIds
+    ];
+    try {
+      Database.delete(valuesToDelete3);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+
+    //finally delete docusign envelope status object records
+    dfsle__EnvelopeStatus__c[] valuesToDelete4 = [
+      SELECT Id
+      FROM dfsle__EnvelopeStatus__c
+      WHERE dfsle__SourceId__c IN :quoteIds
+    ];
+    try {
+      Database.delete(valuesToDelete4);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  public static void deleteDocuSignInvoiceDocuments(Set<Id> records) {
+    //first delete .pdf in Files that look like Invoice Number: SmartBytes Invoice Document_INV-3914_2021-07-15
+    blng__Invoice__c[] invoices = [
+      SELECT Id, Name
+      FROM blng__Invoice__c
+      WHERE Id IN :records
+    ];
+
+    Set<String> documentIds = new Set<String>(); // must be a collection, not set - to use LIKE
+    for (blng__Invoice__c i : invoices) {
+      documentIds.add('%' + i.Name + '%');
+    }
+
+    List<String> arr = new List<String>();
+    arr.addAll(documentIds);
+
+    ContentDocument[] valuesToDelete = [
+      SELECT Id
+      FROM ContentDocument
+      WHERE Title LIKE :arr
+    ];
+    try {
+      Database.delete(valuesToDelete);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+
+    //Next delete .pdf in Files that look like "SmartBytes Invoice Document" - sent for signature
+    Set<String> documentIds2 = new Set<String>(); // must be a collection, not set - to use LIKE
+    documentIds2.add('%' + 'Invoice Document' + '%');
+
+    List<String> arr2 = new List<String>();
+    arr2.addAll(documentIds2);
+
+    ContentDocument[] valuesToDelete2 = [
+      SELECT Id
+      FROM ContentDocument
+      WHERE Title LIKE :arr2
+    ];
+    try {
+      Database.delete(valuesToDelete2);
+    } catch (DmlException e) {
+      System.debug(e);
+      throw new AuraHandledException(e.getMessage());
+    }
+  } */
+
   public static void deleteOrders(Id accId) {
     blng__BillingSchedule__c[] BS = [
       SELECT Id, blng__OrderProduct__r.Order.AccountId
@@ -99,6 +347,9 @@ public with sharing class CPQB_RecordReset {
     if (ordersToDelete.isEmpty()) {
       return;
     }
+
+    CPQB_RecordReset.deleteRecordJobs(ordersToDelete.keySet());
+
     for (Order o : ordersToDelete.values()) {
       o.SBQQ__Contracted__c = false;
     }
@@ -149,25 +400,13 @@ public with sharing class CPQB_RecordReset {
 
   // Delete Assets
   public static void deleteAssets(Id accId) {
-    //        Asset[] assetsToDelete = [SELECT Id, AccountId FROM Asset WHERE AccountId = :accId AND HasLifecycleManagement = FALSE];
+    Asset[] assetsToDelete = [
+      SELECT Id, AccountId
+      FROM Asset
+      WHERE AccountId = :accId
+    ];
     try {
-      //            Database.delete(assetsToDelete);
-      Id assetDeletionAccountId = [
-          SELECT Id
-          FROM Account
-          WHERE Name = 'AssetDeletionIsland - DO NOT DELETE'
-        ]
-        .get(0)
-        .Id;
-
-      Asset[] assetsToDelete = [SELECT Id FROM Asset WHERE AccountId = :accId];
-      if (!assetsToDelete.isEmpty()) {
-        for (Asset asst : assetsToDelete) {
-          asst.AccountId = assetDeletionAccountId;
-        }
-
-        database.update(assetsToDelete);
-      }
+      Database.delete(assetsToDelete);
     } catch (DmlException e) {
       System.debug(e);
       throw new AuraHandledException(e.getMessage());
@@ -190,11 +429,20 @@ public with sharing class CPQB_RecordReset {
   }
 
   public static void deleteContracts(Id accId) {
+    Map<Id, Contract> contractsToDeleteMap = new Map<Id, Contract>(
+      [SELECT Id, AccountId FROM Contract WHERE AccountId = :accId]
+    );
+
     Contract[] contractsToDelete = [
       SELECT Id, SBQQ__RenewalOpportunity__c, AccountId
       FROM Contract
       WHERE AccountId = :accId
     ];
+
+    if (!contractsToDeleteMap.isEmpty()) {
+      CPQB_RecordReset.deleteRecordJobs(contractsToDeleteMap.keySet());
+    }
+
     if (!contractsToDelete.isEmpty()) {
       for (Contract c : contractsToDelete) {
         c.SBQQ__RenewalOpportunity__c = null;
@@ -218,6 +466,10 @@ public with sharing class CPQB_RecordReset {
     }
 
     CPQB_RecordReset.deleteProcessInputValues(quotesToDelete.keySet());
+    CPQB_RecordReset.deleteRecordJobs(quotesToDelete.keySet());
+    CPQB_RecordReset.deleteQuoteDocuments(quotesToDelete.keySet());
+/*     CPQB_RecordReset.deleteCongaQuoteDocuments(quotesToDelete.keySet());
+    CPQB_RecordReset.deleteDocuSignQuoteDocuments(quotesToDelete.keySet()); */
 
     try {
       Database.delete(quotesToDelete.values());
@@ -336,10 +588,23 @@ public with sharing class CPQB_RecordReset {
 
   public static void deleteInvoices(Id accId) {
     blng__Invoice__c[] invoicesToDelete = [
-      SELECT Id, blng__InvoiceStatus__c, blng__Account__r.Id, Reset__c
+      SELECT Id, blng__InvoiceStatus__c, blng__Account__r.Id
       FROM blng__Invoice__c
       WHERE blng__Account__r.Id = :accId
     ];
+
+    //deleteCongaInvoiceDocuments
+    Map<Id, blng__Invoice__c> invoicesToDelete2 = new Map<Id, blng__Invoice__c>(
+      [
+        SELECT Id, Name, blng__Account__r.Id, Account_Name__c
+        FROM blng__Invoice__c
+        WHERE blng__Account__r.Id = :accId
+      ]
+    );
+    //CPQB_RecordReset.deleteCongaInvoiceDocuments(invoicesToDelete2.keySet());
+
+    //deleteDocuSignInvoiceDocuments
+    //CPQB_RecordReset.deleteDocuSignInvoiceDocuments(invoicesToDelete2.keySet());
 
     if (!invoicesToDelete.isEmpty()) {
       Set<Id> invoiceIds = new Set<Id>();
@@ -426,27 +691,6 @@ public with sharing class CPQB_RecordReset {
     } catch (DmlException e) {
       System.debug(e);
       throw new AuraHandledException(e.getMessage());
-    }
-  }
-
-  public static void deleteFinanceTransactions(Id accountId) {
-    List<Id> idsToDel = new List<Id>();
-    List<Id> ids = FinanceTransactionAPI.doGet(accountId);
-    if (ids.size() > 200) {
-      Integer count = ids.size();
-      while (count > 200) {
-        Integer i = 0;
-        for (Id id : ids) {
-          idsToDel.add(ids[i]);
-          ids.remove(i);
-          i++;
-        }
-      }
-      if (idsToDel.size() < 200) {
-        FinanceTransactionAPI.doDeleteComposite(idsToDel);
-      }
-    } else {
-      FinanceTransactionAPI.doDeleteComposite(ids);
     }
   }
 }
