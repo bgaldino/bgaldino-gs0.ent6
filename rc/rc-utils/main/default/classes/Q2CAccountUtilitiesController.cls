@@ -13,7 +13,7 @@ public without sharing class Q2CAccountUtilitiesController {
         Id acctId = this.AccountId;
         ThisAccount = [SELECT SBQQ__CoTermedContractsCombined__c, SBQQ__AssetQuantitiesCombined__c, SBQQ__RenewalModel__c,SBQQ__ContractCoTermination__c, ShippingAddress, BillingAddress,SBQQ__CoTerminationEvent__c,SBQQ__RenewalPricingMethod__c FROM Account where Id = :acctId];
         this.Controller = stdController;
-        //settings = Q2C_Demo_Settings__c.getOrgDefaults();
+        settings = Q2C_Demo_Settings__c.getOrgDefaults();
         IF([SELECT Id, FirstName, LastName, Email FROM Contact WHERE AccountId = :acctId LIMIT 1].size()>0){
             ThisContact = [SELECT Id, FirstName, LastName, Email FROM Contact WHERE AccountId = :acctId LIMIT 1];
         }
@@ -126,7 +126,7 @@ public without sharing class Q2CAccountUtilitiesController {
     }
 
     public PageReference resetAccount() {
-        //updateCustomSettings();
+        updateCustomSettings();
         this.disableBillingTriggers();
         this.deleteDiscScheds();
         this.deletePaymentTransactions();
@@ -404,7 +404,7 @@ public without sharing class Q2CAccountUtilitiesController {
 
     private Boolean deleteAssets() {
         Id a = this.AccountId;
-        Asset[] assetsToDelete = [SELECT Id FROM Asset WHERE AccountId = :a AND HasLifecycleManagement = FALSE];
+        Asset[] assetsToDelete = [SELECT Id FROM Asset WHERE AccountId = :a];
         if (!assetsToDelete.isEmpty()) {
             Database.delete(assetsToDelete);
         }
