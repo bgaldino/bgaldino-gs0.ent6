@@ -27,14 +27,16 @@ public with sharing class FinanceTransactionAPI {
 		System.debug('***** actionType = ' + actionType);
 
 		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/sobjects/FinanceTransaction/';
+		String serviceURL = '/services/data/v' + API_VERSION + '/sobjects/FinanceTransaction/';
+		String restAPIURL = sfdcURL + serviceURL;
 		Http http = new Http();
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setMethod('POST');
-		httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
-		httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
+		//httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+		//httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
 		httpRequest.setHeader('Content-Type', 'application/json');
-		httpRequest.setEndpoint(restAPIURL);
+		httpRequest.setEndpoint('callout:Salesforce1' + serviceURL);
+		
 		SObject record = getRecord(reId);
 
 		FinanceTransaction ftx;
@@ -85,14 +87,16 @@ public with sharing class FinanceTransactionAPI {
 		String account = '\'';
 		String query = 'SELECT+Id+from+FinanceTransaction+WHERE+AccountId=\'' + accountId + '\'';
 		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/query/?q=' + query;
+		String serviceURL = '/services/data/v' + API_VERSION + '/query/?q=' + query;
+		String restAPIURL = sfdcURL + serviceURL;
 		Http http = new Http();
 		HttpRequest httpRequest = new HttpRequest();
-		httpRequest.setMethod('GET');
-		httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
-		httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
+		//httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+		//httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
 		//httpRequest.setHeader('Content-Type', 'application/json');
-		httpRequest.setEndpoint(restAPIURL);
+		httpRequest.setMethod('GET');
+		httpRequest.setEndpoint('callout:Salesforce1' + serviceURL);
+		
 		HttpResponse response = http.send(httpRequest);
 		// Parse the JSON response
 		if (response.getStatusCode() != 200) {
@@ -110,31 +114,34 @@ public with sharing class FinanceTransactionAPI {
     }
     
 	public static void doDelete(List<Id> ids) {
+		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
 		for (Id id : ids) {
-			String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-            String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/sobjects/FinanceTransaction/'+id;
+			String serviceURL = '/services/data/v' + API_VERSION + '/sobjects/FinanceTransaction/'+id;
+            String restAPIURL = sfdcURL + serviceURL;
 			Http http = new Http();
 			HttpRequest httpRequest = new HttpRequest();
+			//httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+			//httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
 			httpRequest.setMethod('DELETE');
-			httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
-			httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
 			httpRequest.setHeader('Content-Type', 'application/json');
-			httpRequest.setEndpoint(restAPIURL);
+			httpRequest.setEndpoint('callout:Salesforce1' + serviceURL);
+			
 			HttpResponse response = http.send(httpRequest);
 		}
     }
 
     public static void doDeleteComposite(List<Id> ids) {
         String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-        if (ids.size() < 200 ) {        
-            String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/composite/sobjects?ids=' + getJoin(ids);
+        if (ids.size() < 200 ) {       
+			String serviceURL = '/services/data/v' + API_VERSION + '/composite/sobjects?ids=' + getJoin(ids);
+            String restAPIURL = sfdcURL + serviceURL;
             Http http = new Http();
 			HttpRequest httpRequest = new HttpRequest();
+			//httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+			//httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
 			httpRequest.setMethod('DELETE');
-			httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
-			httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
 			httpRequest.setHeader('Content-Type', 'application/json');
-			httpRequest.setEndpoint(restAPIURL);
+			httpRequest.setEndpoint('callout:Salesforce1' + serviceURL);
 			HttpResponse response = http.send(httpRequest);
         }
     }
