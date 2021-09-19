@@ -11,10 +11,10 @@ public with sharing class RecognizeRevenueService {
         Http http = new Http();
 		HttpRequest httpRequest = new HttpRequest();
 		httpRequest.setMethod('POST');
-		httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
-		httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
+		//httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+		//httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionID());
         httpRequest.setHeader('Content-Type', 'application/json');
-        httpRequest.setEndpoint(buildRestAPIURL());
+        httpRequest.setEndpoint('callout:Salesforce1' + buildRestAPIURL());
 
         SObject record = getRecord(reId);
         if (reType == 'blng__OrderProduct__c') {
@@ -31,6 +31,13 @@ public with sharing class RecognizeRevenueService {
             System.debug(JSON.serializePretty(rs));
         }
 
+        if (reType == 'blng__Usage__c') {
+            blng__Usage__c usage = (blng__Usage__c)record;
+            RevenueSchedule rs = new RevenueSchedule(usage);
+            httpRequest.setBody(JSON.serialize(rs));
+            System.debug(JSON.serializePretty(rs));
+        }
+
         HttpResponse response = http.send(httpRequest);
 		// Parse the JSON response
 		if (response.getStatusCode() != 200) {
@@ -41,9 +48,10 @@ public with sharing class RecognizeRevenueService {
     }
 
     static String buildRestAPIURL() {
-		String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
-		String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/actions/custom/apex/blng__RevenueRecognition';
-		return restAPIURL;
+		//String sfdcURL = URL.getSalesforceBaseUrl().toExternalForm();
+        String serviceURL = '/services/data/v' + API_VERSION + '/actions/custom/apex/blng__RevenueRecognition';
+		//String restAPIURL = sfdcURL + serviceURL;
+		return serviceURL;
     }
     
     static SObject getRecord(Id recordId) {
@@ -87,6 +95,16 @@ public with sharing class RecognizeRevenueService {
             inputs.add(new RevenueScheduleInputs(ql));
             return inputs;
         }
+
+        RevenueSchedule(blng__Usage__c usage) {
+            inputs = getInputs(usage);
+        }
+
+        List<RevenueScheduleInputs> getInputs(blng__Usage__c usage) {
+            List<RevenueScheduleInputs> inputs = new List<RevenueScheduleInputs>();
+            inputs.add(new RevenueScheduleInputs(usage));
+            return inputs;
+        }
     }
 
     public class RevenueScheduleInputs {
@@ -119,6 +137,17 @@ public with sharing class RecognizeRevenueService {
             sourceFieldname = 'Quote_Line__c';
             startDate = ql.SBQQ__EffectiveStartDate__c;
             endDate = ql.SBQQ__EffectiveEndDate__c;
+            //startDate = oi.ServiceDate.year()+'-'+oi.ServiceDate.month()+'-'+oi.ServiceDate.day();
+            //endDate = oi.EndDate.year()+'-'+oi.EndDate.month()+'-'+oi.EndDate.day();
+        }
+        RevenueScheduleInputs(blng__Usage__c usage) {
+            //currencyIsoCode = ql.CurrencyIsoCode;
+            legalEntityID = usage.blng__OrderProduct__r.blng__LegalEntity__c;
+            revenueAmount = usage.blng__Subtotal__c;
+            revenueRecognitionRuleId = usage.blng__OrderProduct__r.blng__RevenueRecognitionRule__c;
+            source = usage.Id;
+            sourceFieldname = 'Usage__c';
+            startDate = usage.blng__ProcessingDate__c;
             //startDate = oi.ServiceDate.year()+'-'+oi.ServiceDate.month()+'-'+oi.ServiceDate.day();
             //endDate = oi.EndDate.year()+'-'+oi.EndDate.month()+'-'+oi.EndDate.day();
         }
