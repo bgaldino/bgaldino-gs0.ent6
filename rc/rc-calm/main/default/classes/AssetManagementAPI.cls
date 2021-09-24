@@ -1,4 +1,4 @@
-public class AssetManagementAPI {
+public with sharing class AssetManagementAPI {
    public String accountId;
    public String assetName;
    public Id productId;
@@ -17,7 +17,7 @@ public class AssetManagementAPI {
       CHANGE,
       CANCEL
    }
-
+   
    public AssetManagementAPI() {
       //    Asset asset;
       SBQQ__Subscription__c subscription;
@@ -46,8 +46,8 @@ public class AssetManagementAPI {
       Http http = new Http();
       HttpRequest httpRequest = new HttpRequest();
       httpRequest.setMethod('POST');
-      httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
-      httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionId());
+      //httpRequest.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+      //httpRequest.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionId());
       httpRequest.setHeader('Content-Type', 'application/json');
 //        httpRequest.setEndpoint(buildRestAPIURL());
 
@@ -66,7 +66,7 @@ public class AssetManagementAPI {
          System.debug(JSON.serializePretty(aw));
          System.debug(getSerialized(aw));
 
-         httpRequest.setEndpoint(buildGenerateRestAPIURL());
+         httpRequest.setEndpoint('callout:Salesforce1' + buildGenerateRestAPIURL());
 
       } else if (action == 'change') {
          InstallBaseAssetWrapper ibaw = new InstallBaseAssetWrapper(oi);
@@ -74,16 +74,16 @@ public class AssetManagementAPI {
          System.debug('Request Body: ' + httpRequest.getBody());
          System.debug(JSON.serializePretty(ibaw));
 
-         httpRequest.setEndpoint(buildChangeRestAPIURL(oi.blng__Asset__c));
+         httpRequest.setEndpoint('callout:Salesforce1' + buildChangeRestAPIURL(oi.blng__Asset__c));
       } else if (action == 'renew') {
          RenewalBaseAssetWrapper rbaw = new RenewalBaseAssetWrapper(oi);
          httpRequest.setBody(JSON.serialize(rbaw));
          System.debug('Request Body: ' + httpRequest.getBody());
          System.debug(JSON.serializePretty(rbaw));
 
-         httpRequest.setEndpoint(buildChangeRestAPIURL(oi.blng__Asset__c));
+         httpRequest.setEndpoint('callout:Salesforce1' + buildChangeRestAPIURL(oi.blng__Asset__c));
       } else if (action == 'cancel') {
-         httpRequest.setEndpoint(buildCancelRestAPIURL(oi.blng__Asset__c));
+         httpRequest.setEndpoint('callout:Salesforce1' + buildCancelRestAPIURL(oi.blng__Asset__c));
       }
 
 
@@ -108,33 +108,37 @@ public class AssetManagementAPI {
       }
    }
 
-   public class AssetResponse {
+   class AssetResponse {
       public String id;
    }
 
    static String buildRestAPIURL() {
-      String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/actions/generate';
-      return restAPIURL;
+      //String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
+      String serviceURL = '/services/data/v' + API_VERSION + '/asset-management/assets/actions/generate';
+      //String restAPIURL = sfdcURL + serviceURL;
+      return serviceURL;
    }
 
    static String buildGenerateRestAPIURL() {
-      String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/actions/generate';
-      return restAPIURL;
+      //String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
+      String serviceURL = '/services/data/v' + API_VERSION + '/asset-management/assets/actions/generate';
+      //String restAPIURL = sfdcURL + serviceURL;
+      return serviceURL;
    }
 
    static String buildChangeRestAPIURL(Id assetId) {
-      String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/' + assetId + '/actions/change';
-      System.debug('URL posted to was ' + restAPIURL);
-      return restAPIURL;
+      //String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
+      String serviceURL = '/services/data/v' + API_VERSION + '/asset-management/assets/' + assetId + '/actions/change';
+      //String restAPIURL = sfdcURL + serviceURL;
+      System.debug('URL posted to was ' + serviceURL);
+      return serviceURL;
    }
 
    static String buildCancelRestAPIURL(Id assetId) {
-      String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
-      String restAPIURL = sfdcURL + '/services/data/v' + API_VERSION + '/asset-management/assets/' + assetId + '/actions/cancel';
-      return restAPIURL;
+      //String sfdcURL = Url.getSalesforceBaseUrl().toExternalForm();
+      String serviceURL = '/services/data/v' + API_VERSION + '/asset-management/assets/' + assetId + '/actions/cancel';
+      //String restAPIURL = sfdcURL + serviceURL;
+      return serviceURL;
    }
 
    static SObject getRecord(Id recordId) {
@@ -565,7 +569,7 @@ public class AssetManagementAPI {
    }
    */
 
-   public class AssetStatePeriodWrapper {
+   class AssetStatePeriodWrapper {
       String startDate;
       String endDate;
       Double quantity;
@@ -580,14 +584,14 @@ public class AssetManagementAPI {
          mrr = mrrAmount;
       }
 
-      public String formatStartDate(Date sDate) {
+      String formatStartDate(Date sDate) {
          Datetime rawStartDateTime = Datetime.newInstanceGmt(sDate.year(), sDate.month(), sDate.day(), 0, 0, 0);
          String formattedStartDate = rawStartDateTime.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
          System.debug(formattedStartDate);
          return formattedStartDate;
       }
 
-      public String formatEndDate(Date eDate) {
+      String formatEndDate(Date eDate) {
          Datetime rawEndDateTime = Datetime.newInstanceGmt(eDate.year(), eDate.month(), eDate.day(), 23, 59, 59);
          String formattedEndDate = rawEndDateTime.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
          System.debug(formattedEndDate);
@@ -595,7 +599,7 @@ public class AssetManagementAPI {
       }
    }
 
-   public class ExistingAssetStatePeriodWrapper {
+   class ExistingAssetStatePeriodWrapper {
       String startDate;
       String endDate;
       Double quantity;
@@ -608,7 +612,7 @@ public class AssetManagementAPI {
          amount = amt;
          mrr = mrrAmount;
       }
-      public String formatStartDate(Datetime sDate) {
+      String formatStartDate(Datetime sDate) {
 //            DateTime rawStartDateTime = DateTime.newInstanceGMT(sDate.year(), sDate.month(), sDate.day(), sDate.hour(), sDate.minute(), sDate.second());
          Datetime rawStartDateTime = sDate;
          String formattedStartDate = rawStartDateTime.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
@@ -616,7 +620,7 @@ public class AssetManagementAPI {
          return formattedStartDate;
       }
 
-      public String formatEndDate(Datetime eDate) {
+      String formatEndDate(Datetime eDate) {
 //            DateTime rawEndDateTime = DateTime.newInstanceGMT(eDate.year(), eDate.month(), eDate.day(), eDate.hour(), eDate.minute(), eDate.second());
          Datetime rawEndDateTime = eDate;
          String formattedEndDate = rawEndDateTime.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
