@@ -43,6 +43,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>blng__LegalEntity__c.Default__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>blng__PaymentAllocationInvoiceLine__c.AccountId__c</field>
         <readable>true</readable>
     </fieldPermissions>
