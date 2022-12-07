@@ -39,3 +39,4 @@ $RECYCLE.BIN/
 # Local environment variables
 .env
 package-lock.json
+.vscode
